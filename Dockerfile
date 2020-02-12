@@ -3,43 +3,12 @@
 #       BASE image
 #   ---------------------------------------------------------------------------
 #   ===========================================================================
-FROM lsiobase/ffmpeg:bin as binstage
-FROM node:8 AS base
-
-# Add files from binstage
-COPY --from=binstage / /
-
-# hardware env
-ENV \
- LIBVA_DRIVERS_PATH="/usr/lib/x86_64-linux-gnu/dri" \
- NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
- NVIDIA_VISIBLE_DEVICES="all"
-
-RUN \
- echo "**** install runtime ****" && \
- apt-get update && \
- apt-get install -y \
-	i965-va-driver \
-	libexpat1 \
-	libgl1-mesa-dri \
-	libglib2.0-0 \
-	libgomp1 \
-	libharfbuzz0b \
-	libv4l-0 \
-	libx11-6 \
-	libxcb1 \
-	libxext6 \
-	libxml2 && \
- echo "**** clean up ****" && \
- rm -rf \
-	/var/lib/apt/lists/* \
-	/var/tmp/*
-
+FROM jrottenberg/ffmpeg:3.4-vaapi AS base
 
 WORKDIR /tmp/workdir
 
 # Add jessie-backports to the sources list
-RUN echo "deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list
+#RUN echo "deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list
 
 # Install package dependencies
 RUN apt-get update && \ 
@@ -68,20 +37,24 @@ RUN apt-get update && \
         tar \ 
         x264
 
-# Install additional packages
+# Install additional packages         openrc \
 RUN apt-get install -y \
         git \
         libsqlite3-dev \
         make \
+        curl \
         mariadb-client \
-        openrc \
         pkg-config \
         python \
         socat \
         sqlite \
         wget \
         tar \
+        sudo \
         xz-utils
+
+RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+RUN apt-get install -y nodejs
 
 RUN npm i npm@latest -g && \
     npm install pm2 -g
