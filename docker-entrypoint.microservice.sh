@@ -211,6 +211,10 @@ cd /opt/shinobi
 echo "  - Set cpuUsageMarker ..."
 node tools/modifyConfiguration.js cpuUsageMarker=CPU
 
+# Start Plugin Yolo
+echo "Start Plugin Yolo"
+pm2 start /opt/shinobi/plugins/yolo/shinobi-yolo.js &
+
 # Execute Command
 echo "Starting Shinobi ..."
 exec "$@"

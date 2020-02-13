@@ -178,7 +178,10 @@ COPY docker-entrypoint.microservice.sh pm2Shinobi.yml ./
 COPY modifyJson.js ./tools
 COPY sql/*.sql ./sql
 
+
 RUN chmod -f +x ./*.sh
+RUN chmod -f +x ./plugins/yolo/*.sh
+RUN /opt/shinobi/plugins/yolo/INSTALL.sh
 
 VOLUME [ "/opt/dbdata" ]
 VOLUME [ "/opt/shinobi/videos" ]
